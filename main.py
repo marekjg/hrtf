@@ -50,7 +50,7 @@ win_name, img = initialize_cv2()
 win_x, win_y = 0, 0
 
 # Refer to HRIR documentation in the CIPIC dataset
-hrir = loadmat('hrir_final.mat')
+hrir = loadmat('cipic_hrir/hrir_final.mat')
 hrir_l = hrir['hrir_l'][:, 49, :]
 hrir_r = hrir['hrir_r'][:, 49, :]
 azimuths = np.float32([-80, -65, -55, -45, -40,
