@@ -14,9 +14,11 @@ def pyaudio_callback(in_data, frame_count, time_info, status):
     global i
     global dist
     x = np.random.randn(frame_count) * dist ** 2 / 5
+    # HRTF is just convolution with left/right
+    # ear impulse responses at a given angle.
     x_l = np.convolve(x, hrir_l[i], mode='same')
     x_r = np.convolve(x, hrir_r[i], mode='same')
-    x = np.vstack((x_r, x_l)).T
+    x = np.vstack((x_l, x_r)).T
 
     x = x.flatten().astype('float32')
     x = x.tostring()
@@ -31,7 +33,7 @@ def mouse_callback(event, x, y, flags, param):
 
     win_x, win_y = x, y
     x, y = x - 256, 512 - y
-    angle = -90 + np.arctan2(y, x) * 180 / np.pi
+    angle = 90 - np.arctan2(y, x) * 180 / np.pi
     dist = 1 - (x ** 2 + y ** 2) ** 0.5 / (256 ** 2 + 512 ** 2) ** 0.5
     i = angle_to_idx(angle)
     print(i, angle, dist)
@@ -47,6 +49,7 @@ def initialize_cv2():
 win_name, img = initialize_cv2()
 win_x, win_y = 0, 0
 
+# Refer to HRIR documentation in the CIPIC dataset
 hrir = loadmat('hrir_final.mat')
 hrir_l = hrir['hrir_l'][:, 49, :]
 hrir_r = hrir['hrir_r'][:, 49, :]
